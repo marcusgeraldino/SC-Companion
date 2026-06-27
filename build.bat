@@ -1,0 +1,1 @@
+bun build index.ts --compile --outfile sc-companion.exe
