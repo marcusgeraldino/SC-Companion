@@ -8,6 +8,12 @@ Ferramenta simples para analisar logs do Star Citizen, detectar tempo em jogo, t
 
 ---
 
+## 📺 Tutorial em vídeo
+
+[▶️ Assista como usar o SC Companion](https://www.youtube.com/watch?v=rurPPNFd9ZY)
+
+---
+
 ## 📌 Funcionalidades
 
 ✅ Leitura automática dos logs do Star Citizen  
