@@ -15,30 +15,42 @@ export async function runParser(basePath: string) {
 
     const db = new Database(DB_FILE);
 
-    db.run(`
-  CREATE TABLE IF NOT EXISTS daily_logs (
-    date TEXT PRIMARY KEY,
-    total_seconds INTEGER,
-    in_game_seconds INTEGER,
-    afk_seconds INTEGER,
-    sessions INTEGER
-  );
-  `);
+    // ==========================
+    // CRIA TABELAS
+    // ==========================
 
     db.run(`
-  CREATE TABLE IF NOT EXISTS global_stats (
-    id INTEGER PRIMARY KEY CHECK (id = 1),
-    total_seconds INTEGER,
-    in_game_seconds INTEGER,
-    afk_seconds INTEGER,
-    sessions INTEGER
-  );
-  `);
+    CREATE TABLE IF NOT EXISTS daily_logs (
+      date TEXT PRIMARY KEY,
+      total_seconds INTEGER,
+      in_game_seconds INTEGER,
+      afk_seconds INTEGER,
+      sessions INTEGER
+    );
+    `);
+
+    db.run(`
+    CREATE TABLE IF NOT EXISTS global_stats (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      total_seconds INTEGER,
+      in_game_seconds INTEGER,
+      afk_seconds INTEGER,
+      sessions INTEGER
+    );
+    `);
+
+    // ==========================
+    // UTIL
+    // ==========================
 
     function extractTimestamp(line: string): Date | null {
         const match = line.match(/<(.+?)>/);
         return match ? new Date(match[1]) : null;
     }
+
+    // ==========================
+    // PROCESSA LOG
+    // ==========================
 
     async function processLog(filePath: string) {
         const stream = fs.createReadStream(filePath);
@@ -75,6 +87,7 @@ export async function runParser(basePath: string) {
 
             prevTs = ts;
 
+            // eventos
             if (line.includes("CGameContext::m_currentState = EGameContextState::eEGS_Running")) {
                 isInGame = true;
             }
@@ -97,50 +110,62 @@ export async function runParser(basePath: string) {
         };
     }
 
+    // ==========================
+    // SALVA DIA
+    // ==========================
+
     function saveDaily(data: any) {
         const existing = db.query(`SELECT * FROM daily_logs WHERE date = ?`).get(data.date);
 
         if (existing) {
             db.run(`
-        UPDATE daily_logs
-        SET total_seconds = total_seconds + ?,
-            in_game_seconds = in_game_seconds + ?,
-            afk_seconds = afk_seconds + ?,
-            sessions = sessions + ?
-        WHERE date = ?
-      `, [data.total, data.inGame, data.afk, data.sessions, data.date]);
+            UPDATE daily_logs
+            SET total_seconds = total_seconds + ?,
+                in_game_seconds = in_game_seconds + ?,
+                afk_seconds = afk_seconds + ?,
+                sessions = sessions + ?
+            WHERE date = ?
+            `, [data.total, data.inGame, data.afk, data.sessions, data.date]);
         } else {
             db.run(`
-        INSERT INTO daily_logs VALUES (?, ?, ?, ?, ?)
-      `, [data.date, data.total, data.inGame, data.afk, data.sessions]);
+            INSERT INTO daily_logs VALUES (?, ?, ?, ?, ?)
+            `, [data.date, data.total, data.inGame, data.afk, data.sessions]);
         }
     }
 
+    // ==========================
+    // GLOBAL
+    // ==========================
+
     function updateGlobal() {
         const totals = db.query(`
-      SELECT 
-        SUM(total_seconds) as total,
-        SUM(in_game_seconds) as ingame,
-        SUM(afk_seconds) as afk,
-        SUM(sessions) as sessions
-      FROM daily_logs
-    `).get() as any;
+        SELECT 
+          SUM(total_seconds) as total,
+          SUM(in_game_seconds) as ingame,
+          SUM(afk_seconds) as afk,
+          SUM(sessions) as sessions
+        FROM daily_logs
+        `).get() as any;
 
         db.run(`
-      INSERT INTO global_stats (id, total_seconds, in_game_seconds, afk_seconds, sessions)
-      VALUES (1, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET
-        total_seconds = excluded.total_seconds,
-        in_game_seconds = excluded.in_game_seconds,
-        afk_seconds = excluded.afk_seconds,
-        sessions = excluded.sessions
-    `, [
+        INSERT INTO global_stats (id, total_seconds, in_game_seconds, afk_seconds, sessions)
+        VALUES (1, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          total_seconds = excluded.total_seconds,
+          in_game_seconds = excluded.in_game_seconds,
+          afk_seconds = excluded.afk_seconds,
+          sessions = excluded.sessions
+        `, [
             totals?.total || 0,
             totals?.ingame || 0,
             totals?.afk || 0,
             totals?.sessions || 0
         ]);
     }
+
+    // ==========================
+    // SCAN
+    // ==========================
 
     async function scanLogs() {
         const folders = [
@@ -162,12 +187,21 @@ export async function runParser(basePath: string) {
 
                 const data = await processLog(fullPath);
 
-                if (data.date) saveDaily(data);
+                if (data.date) {
+                    saveDaily(data);
+                }
             }
         }
 
         updateGlobal();
     }
 
+    // ==========================
+    // EXECUÇÃO
+    // ==========================
+
     await scanLogs();
+
+    // ✅ MUITO IMPORTANTE: FECHAR DB
+    db.close();
 }

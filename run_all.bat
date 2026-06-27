@@ -1,3 +1,3 @@
 @echo off
-bun run src/index.ts
+bun run index.ts
 pause
