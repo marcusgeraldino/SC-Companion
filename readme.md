@@ -33,13 +33,29 @@ config.json     -> configuração do caminho do jogo
 
 ## ⚙️ Requisitos
 
-- https://bun.sh/
 - Windows (testado)
 - Star Citizen instalado
+- Bun (obrigatório)
 
 ---
 
-## ⚙️ Configuração (IMPORTANTE)
+## 🛠️ Instalando o Bun (PASSO IMPORTANTE)
+
+1. Acesse: https://bun.sh/
+
+2. Baixe e instale normalmente.
+
+3. Após instalar, abra o PowerShell e digite:
+
+```
+bun --version
+```
+
+Se aparecer um número, está funcionando ✅
+
+---
+
+## ⚙️ Configuração
 
 Crie um arquivo chamado `config.json` na raiz do projeto:
 
@@ -53,16 +69,9 @@ Crie um arquivo chamado `config.json` na raiz do projeto:
 
 ## 🚀 Como usar
 
-### 1. Clone o projeto
+### ✅ Forma mais fácil
 
-```bash
-git clone https://github.com/seu-usuario/sc-companion-parser.git
-cd sc-companion-parser
-```
-
-### 2. Rodar tudo automaticamente
-
-Execute:
+Dê duplo clique em:
 
 ```
 run_all.bat
