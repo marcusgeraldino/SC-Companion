@@ -1,6 +1,10 @@
 # 🚀 SC Companion - Log Parser + Insights
 
-Ferramenta simples feita em **Bun** para analisar logs do Star Citizen, detectar tempo em jogo, AFK e gerar insights automaticamente em HTML.
+Ferramenta simples para analisar logs do Star Citizen, detectar tempo em jogo, tempo AFK e gerar um relatório visual automaticamente.
+
+✅ Não precisa instalar nada  
+✅ Basta executar o .exe  
+✅ Funciona offline  
 
 ---
 
@@ -14,80 +18,96 @@ Ferramenta simples feita em **Bun** para analisar logs do Star Citizen, detectar
 - Número de sessões  
 
 ✅ Detector de AFK (baseado em tempo sem atividade no log)  
-✅ Armazenamento em SQLite  
-✅ Relatório automático em HTML com insights  
+✅ Relatório visual com gráficos (HTML)  
 
 ---
 
-## 📂 Estrutura do projeto
+## 📦 Como usar
+
+### ✅ Forma mais fácil (recomendado)
+
+1. Baixe o arquivo:
 
 ```
-src/
-  index.ts      -> parser dos logs
-  report.ts     -> geração de insights + HTML
-run_all.bat     -> executa tudo automaticamente
-config.json     -> configuração do caminho do jogo
+sc-companion.exe
 ```
+
+2. Copie o arquivo para dentro da pasta do Star Citizen:
+
+```
+StarCitizen/LIVE
+```
+
+3. Execute o arquivo:
+
+```
+sc-companion.exe
+```
+
+4. Quando aparecer a opção:
+
+```
+Digite o caminho da pasta LIVE do Star Citizen (ou pressione ENTER)
+```
+
+👉 Apenas pressione ENTER
 
 ---
 
-## ⚙️ Requisitos
+## ✅ Alternativa (manual)
 
-- Windows (testado)
-- Star Citizen instalado
-- Bun (obrigatório)
-
----
-
-## 🛠️ Instalando o Bun (PASSO IMPORTANTE)
-
-1. Acesse: https://bun.sh/
-
-2. Baixe e instale normalmente.
-
-3. Após instalar, abra o PowerShell e digite:
+1. Execute o arquivo
+2. Digite o caminho completo do jogo, por exemplo:
 
 ```
-bun --version
-```
-
-Se aparecer um número, está funcionando ✅
-
----
-
-## ⚙️ Configuração
-
-Crie um arquivo chamado `config.json` na raiz do projeto:
-
-```json
-{
-  "gamePath": "F:/Roberts Space Industries/StarCitizen/LIVE"
-}
-```
-
----
-
-## 🚀 Como usar
-
-### ✅ Forma mais fácil
-
-Dê duplo clique em:
-
-```
-run_all.bat
+F:/Roberts Space Industries/StarCitizen/LIVE
 ```
 
 ---
 
 ## 📊 Resultado
 
-Será gerado um arquivo `report.html` com todos os insights.
+Será gerado automaticamente:
+
+```
+report.html
+```
+
+E aberto no navegador com os dados analisados.
+
+---
+
+## 📈 O que você verá
+
+- Total de horas jogadas  
+- Tempo real em jogo  
+- Tempo AFK  
+- Número de sessões  
+- Gráficos de uso  
+- Histórico diário  
 
 ---
 
 ## 🧠 Como funciona o AFK
 
-AFK é detectado quando não há log por mais de 60 segundos.
+AFK é detectado quando:
+
+> Não há atividade no log por mais de 60 segundos
+
+---
+
+## ⚠️ Observações
+
+- O relatório é gerado localmente (nenhum dado é enviado para internet)
+- Pode aparecer aviso do Windows Defender (normal para apps não assinados)
+- O tempo de processamento depende da quantidade de logs
+
+---
+
+## ✅ Requisitos
+
+- Windows
+- Star Citizen instalado
 
 ---
 
