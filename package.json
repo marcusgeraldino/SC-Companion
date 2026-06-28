@@ -1,5 +1,5 @@
 {
-  "name": "parser",
+  "name": "comp",
   "module": "index.ts",
   "type": "module",
   "private": true,
